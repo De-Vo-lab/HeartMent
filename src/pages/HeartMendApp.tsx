@@ -32,7 +32,7 @@ const HeartMendApp = () => {
   const [story, setStory] = useState('');
   const [feeling, setFeeling] = useState('');
   const [mode, setMode] = useState<Mode>('CALM DOWN');
-  const [language, setLanguage] = useState('English');
+  const [language, setLanguage] = useState('Malayalam (Manglish requested)');
 
   // Chat state
   const [input, setInput] = useState('');
