@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, ExternalLink, ArrowLeft, LogOut, CheckCircle } from 'lucide-react';
+import { Shield, ExternalLink, LogOut, CheckCircle } from 'lucide-react';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -76,7 +76,7 @@ const Admin = () => {
             Use this database to review transcripts, monitor patient progress, and plan clinical interventions.
           </p>
           <a 
-            href="https://docs.google.com/spreadsheets/d/1vTQ4xOh5a-57777jwwGJTDHYrCLAvEx9xisg7bWAkT8gmx0eMLA5jxNaJJ7fWyGyWrKoSQR-cjHUA8o/edit" 
+            href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ4xOh5a-57777jwwGJTDHYrCLAvEx9xisg7bWAkT8gmx0eMLA5jxNaJJ7fWyGyWrKoSQR-cjHUA8o/pubhtml" 
             target="_blank" 
             rel="noopener noreferrer"
             className="btn"
