@@ -1,12 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSessions } from '../store/SessionStore';
 import type { Mode, SessionData } from '../types';
 import { Send, User, Bot, AlertCircle, Heart } from 'lucide-react';
 
 const HeartMendApp = () => {
-  const { addSession, addMessage, getSessionMessages } = useSessions();
+  const { currentUser, addSession, addMessage, getSessionMessages } = useSessions();
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentUser) {
+       navigate('/login');
+    }
+  }, [currentUser, navigate]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const sessionParam = params.get('session');
+    if (sessionParam) {
+      setActiveSessionId(sessionParam);
+    }
+  }, [location.search]);
   
   // Form state
   const [partnerName, setPartnerName] = useState('');
@@ -16,6 +33,7 @@ const HeartMendApp = () => {
   const [feeling, setFeeling] = useState('');
   const [need, setNeed] = useState('');
   const [mode, setMode] = useState<Mode>('CALM DOWN');
+  const [language, setLanguage] = useState('English');
 
   // Chat state
   const [input, setInput] = useState('');
@@ -25,7 +43,7 @@ const HeartMendApp = () => {
   const startSession = (e: React.FormEvent) => {
     e.preventDefault();
     const sessionId = addSession({
-      partnerName, duration, whoEnded, story, feeling, need, mode
+      partnerName, duration, whoEnded, story, feeling, need, mode, language
     });
     setActiveSessionId(sessionId);
     
@@ -33,7 +51,7 @@ const HeartMendApp = () => {
     addMessage({
       sessionId,
       role: 'assistant',
-      content: `Hi there. I'm so sorry you're going through this. I saw that you've been with ${partnerName} for ${duration}, and right now you're feeling ${feeling}. You don't have to go through this alone. I am here for you. How can I best support you today?`
+      content: `Hi ${currentUser?.username || 'friend'}. Look, I heard what happened with ${partnerName}. It seriously sucks that you're feeling ${feeling} after ${duration} together. But honestly, my creator (the boss) built me because he went through a completely miserable heartbreak of his own... so I literally exist for this exact moment. Grab a seat, let's talk about it.`
     });
   };
 
@@ -91,6 +109,13 @@ const HeartMendApp = () => {
             <label className="mt-4">How are you feeling right now?</label>
             <input required className="input-field" value={feeling} onChange={e => setFeeling(e.target.value)} placeholder="Lost, confused, angry..." />
 
+            <label className="mt-4">Preferred Language</label>
+            <select className="input-field" value={language} onChange={e => setLanguage(e.target.value)}>
+              <option value="English">English</option>
+              <option value="Malayalam (Manglish requested)">Malayalam (You can type in Manglish!)</option>
+              <option value="Hindi">Hindi</option>
+            </select>
+
             <label className="mt-4">What do you think you need most right now?</label>
             <select className="input-field" value={mode} onChange={e => setMode(e.target.value as Mode)}>
               <option value="CALM DOWN">To just calm down and feel safe</option>
@@ -116,7 +141,7 @@ const HeartMendApp = () => {
             <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>HeartMend</h3>
             <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)' }}>Current Mode: {mode}</span>
           </div>
-          <button onClick={() => setActiveSessionId(null)} className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }}>End Session</button>
+          <button onClick={() => navigate('/dashboard')} className="btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }}>Exit to Dashboard</button>
         </div>
 
         {/* Chat Area */}
