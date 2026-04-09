@@ -5,13 +5,29 @@ import { useSessions } from '../store/SessionStore';
 import { Heart, MessageCircle, Trash2 } from 'lucide-react';
 
 const UserDashboard = () => {
-  const { sessions, deleteSession } = useSessions();
+  const { currentUser, sessions, setCurrentUser, deleteSession } = useSessions();
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    navigate('/');
+  };
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/login');
+    }
+  }, [currentUser, navigate]);
+
+  if (!currentUser) return null;
 
   return (
     <div className="container" style={{ padding: '4rem 2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
-        <h1 style={{ margin: 0 }}>My Sessions</h1>
+        <h1 style={{ margin: 0 }}>Welcome, {currentUser.username}</h1>
+        <button onClick={handleLogout} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          Logout
+        </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>

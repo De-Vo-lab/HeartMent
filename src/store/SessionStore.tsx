@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { SessionData, Message } from '../types';
+import type { SessionData, Message, User } from '../types';
 
 interface SessionContextType {
+  currentUser: User | null;
+  setCurrentUser: (user: User | null) => void;
   sessions: SessionData[];
   messages: Message[];
   addSession: (session: Omit<SessionData, 'id' | 'createdAt'>) => string;
@@ -15,6 +17,11 @@ interface SessionContextType {
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
 export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('heartmend_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
   const [sessions, setSessions] = useState<SessionData[]>(() => {
     const saved = localStorage.getItem('heartmend_sessions');
     return saved ? JSON.parse(saved) : [];
@@ -25,7 +32,14 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Hydrate user from localStorage
+  useEffect(() => {
+    if (currentUser) {
+       localStorage.setItem('heartmend_user', JSON.stringify(currentUser));
+    } else {
+       localStorage.removeItem('heartmend_user');
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     localStorage.setItem('heartmend_sessions', JSON.stringify(sessions));
   }, [sessions]);
@@ -83,7 +97,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   return (
     <SessionContext.Provider value={{ 
-      sessions, messages, 
+      currentUser, setCurrentUser, sessions, messages, 
       addSession, deleteSession, addMessage, getSession, getSessionMessages 
     }}>
       {children}
