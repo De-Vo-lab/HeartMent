@@ -4,8 +4,8 @@ const MOCK_DELAY = 1500;
 
 export async function generateAIResponse(
   session: SessionData,
-  history: Message[],
-  apiKey?: string
+  _history: Message[],
+  _apiKey?: string
 ): Promise<string> {
   // If no API key is provided, use mocked generic empathetic responses depending on the mode.
   // In a real implementation, we would call the Gemini API here.

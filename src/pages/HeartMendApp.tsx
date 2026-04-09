@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSessions } from '../store/SessionStore';
-import type { Mode, SessionData } from '../types';
-import { Send, User, Bot, AlertCircle, Heart } from 'lucide-react';
+import type { Mode } from '../types';
+import { Send, User, Heart } from 'lucide-react';
 
 const HeartMendApp = () => {
   const { currentUser, addSession, addMessage, getSessionMessages } = useSessions();
@@ -31,7 +31,6 @@ const HeartMendApp = () => {
   const [whoEnded, setWhoEnded] = useState('We mutually agreed');
   const [story, setStory] = useState('');
   const [feeling, setFeeling] = useState('');
-  const [need, setNeed] = useState('');
   const [mode, setMode] = useState<Mode>('CALM DOWN');
   const [language, setLanguage] = useState('English');
 
@@ -43,7 +42,7 @@ const HeartMendApp = () => {
   const startSession = (e: React.FormEvent) => {
     e.preventDefault();
     const sessionId = addSession({
-      partnerName, duration, whoEnded, story, feeling, need, mode, language
+      partnerName, duration, whoEnded, story, feeling, need: 'Support', mode, language
     });
     setActiveSessionId(sessionId);
     
