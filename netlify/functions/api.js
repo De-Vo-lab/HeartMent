@@ -7,8 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Note: Netlify provides environment variables via process.env automatically
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+// Initialize with zero-config to allow Netlify AI Gateway to inject the proper Base URL and API Key
+const ai = new GoogleGenAI({});
 
 app.post('/api/messages', async (req, res) => {
   try {
@@ -69,7 +69,7 @@ Your current mode is: ${session.mode}`;
          aiResponseText = "I hear you, and it's okay to feel this way. Please take a deep breath.";
       }
     } else {
-       aiResponseText = 'No GEMINI_API_KEY backend variable configured on the host server!';
+       aiResponseText = "HeartMend isn't connected to its brain yet! Please make sure your API key is correctly set up in the dashboard.";
     }
 
     const aiResponse = { id: crypto.randomUUID(), sessionId: session.id, role: 'assistant', content: aiResponseText, timestamp: Date.now() };
