@@ -7,8 +7,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Note: Netlify provides environment variables via process.env automatically
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+// Netlify AI Gateway auto-injects GEMINI_API_KEY and GOOGLE_GEMINI_BASE_URL.
+// Zero-config constructor lets the SDK pick up both env vars automatically.
+const ai = new GoogleGenAI({});
 
 app.post('/api/messages', async (req, res) => {
   try {
@@ -57,7 +58,6 @@ Your current mode is: ${session.mode}`;
     let aiResponseText = '...';
     if (process.env.GEMINI_API_KEY) {
       try {
-         // Using the exact syntax that worked locally
          const response = await ai.models.generateContent({
              model: 'gemini-flash-lite-latest',
              contents: contents,
@@ -65,11 +65,12 @@ Your current mode is: ${session.mode}`;
          });
          aiResponseText = response.text || "I'm here for you.";
       } catch (e) {
-         console.error("Gemini Error:", e);
+         console.error("Gemini API Error:", e.message || e);
          aiResponseText = "I hear you, and it's okay to feel this way. Please take a deep breath.";
       }
     } else {
-       aiResponseText = 'No GEMINI_API_KEY backend variable configured on the host server!';
+       console.error('GEMINI_API_KEY is not set. Ensure AI Gateway is enabled or a key is configured.');
+       aiResponseText = 'AI service is temporarily unavailable. Please try again later.';
     }
 
     const aiResponse = { id: crypto.randomUUID(), sessionId: session.id, role: 'assistant', content: aiResponseText, timestamp: Date.now() };
